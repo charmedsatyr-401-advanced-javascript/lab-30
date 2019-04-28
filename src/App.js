@@ -1,68 +1,106 @@
 import React from 'react';
+import Header from './components/header/header';
+import Footer from './components/footer/footer';
+import Yelp from './components/yelp/yelp';
+import Form from './components/yelp/form';
+import DarkSky from './components/darksky/darksky';
+import Meetups from './components/meetups/meetups';
 
-function App() {
-  return (
-    <>
-      <header>
-        <h1>City Explorer</h1>
-        <p>
-          Enter a location below to learn about the weather, events, restaurants, movies filmed
-          there, and more!
-        </p>
-      </header>
-      <main>
-        <form id="url-form">
-          <label>
-            Enter the URL to your deployed back end, making sure to remove the trailing forward
-            slash
-          </label>
-          <input type="text" id="back-end-url" />
-        </form>
-        <form id="search-form" class="hide">
-          <label for="search">Search for a location</label>
-          <input type="text" name="search" id="input-search" placeholder="Enter a location here" />
-          <button type="submit">Explore!</button>
-        </form>
-        <img id="map" class="hide" src="" alt="Map of search query" />
-        <h2 class="query-placeholder">query</h2>
-        {/* Section for error message */}
-        <section class="error-container" />
+import superagent from 'superagent';
 
-        <div class="column-container hide">
-          {/* Section for weather data */}
-          <section>
-            <h3>Results from the Dark Sky API</h3>
-            <ul class="weather-results" />
-          </section>
+class App extends React.Component {
+  constructor(props) {
+    super(props);
 
-          {/* Section for Yelp data */}
-          <section class="yelp-container">
-            <h3>Results from the Yelp API</h3>
-            <ul class="yelp-results" />
-          </section>
+    this.state = {};
+  }
+  fetchCityData = e => {
+    e.preventDefault();
+    const searchQuery = 'Seattle, WA';
+    const APP_URL = 'https://city-explorer-backend.herokuapp.com';
 
-          {/* Section for Meetup data */}
-          <section>
-            <h3>Results from the Meetup API</h3>
-            <ul class="meetups-results" />
-          </section>
+    const displayMap = location => {
+      console.log(`displayMap for ${location}`);
+    };
+    const getResource = (resource, location) => {
+      superagent
+        .get(`${APP_URL}/${resource}`)
+        .query({ data: location })
+        .then(result => {
+          this.setState({ [resource]: result });
+          console.log(`Result for ${resource}, ${location}:`, result);
+        })
+        .catch(console.error);
+    };
 
-          {/* Section for movie data */}
-          <section class="movie-container">
-            <h3>Results from The Movie DB API</h3>
-            <ul class="movies-results" />
-          </section>
+    superagent
+      .get(`${APP_URL}/location`)
+      .query({ data: searchQuery })
+      .then(location => {
+        this.setState({ location: location.body.formatted_query });
 
-          {/* Section for trails data */}
-          <section>
-            <h3>Results from the Hiking Project API</h3>
-            <ul class="trails-results" />
-          </section>
-        </div>
-      </main>
-      <footer>DONE</footer>
-    </>
-  );
+        displayMap(location);
+        getResource('weather', location);
+        getResource('movies', location);
+        getResource('yelp', location);
+        getResource('meetups', location);
+        getResource('trails', location);
+      })
+      .catch(console.error);
+  };
+
+  render() {
+    return (
+      <>
+        <Header />
+        <main>
+          {/*** NEEDS ON-USBMIT ***/}
+          <Form handleSubmit={this.fetchCityData} />
+
+          <img id="map" className="hide" src="" alt="Map of search query" />
+
+          {/*** NEEDS TO DISPLAY RESULTS ***/}
+          <h2 className="query-placeholder">
+            {this.state.location && `Here are the results for ${this.state.location}`}
+          </h2>
+          {/* Section for error message */}
+          <section className="error-container" />
+
+          <div className="column-container">
+            {/* Section for weather data */}
+            <section>
+              <h3>Results from the Dark Sky API</h3>
+              <DarkSky content={this.state.weather} />
+            </section>
+
+            <section className="yelp-container">
+              <h3>Results from the Yelp API</h3>
+              <Yelp content={this.state.yelp} />
+            </section>
+
+            {/* Section for Meetup data */}
+            <section>
+              <h3>Results from the Meetup API</h3>
+              <Meetups content={this.state.meetups} />
+            </section>
+
+            {/* Section for movie data */}
+            <section className="movie-container">
+              <h3>Results from The Movie DB API</h3>
+              <ul className="movies-results" />
+            </section>
+
+            {/* Section for trails data */}
+            <section>
+              <h3>Results from the Hiking Project API</h3>
+              <ul className="trails-results" />
+            </section>
+          </div>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 }
 
 export default App;
