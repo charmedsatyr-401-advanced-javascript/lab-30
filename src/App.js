@@ -2,7 +2,7 @@ import React from 'react';
 import Header from './components/header/header';
 import Footer from './components/footer/footer';
 import Yelp from './components/yelp/yelp';
-import Form from './components/yelp/form';
+import Form from './components/form/form';
 import DarkSky from './components/darksky/darksky';
 import Meetups from './components/meetups/meetups';
 
