@@ -20,7 +20,9 @@ class App extends React.Component {
     const searchQuery = document.getElementById('input-search').value;
     if (searchQuery) {
       const results = await fetchCityData(searchQuery);
-      this.setState(Object.assign({}, ...results));
+      if (results) {
+        this.setState(Object.assign({}, ...results));
+      }
     }
   };
   render() {
@@ -36,10 +38,11 @@ class App extends React.Component {
           <h2 className="query-placeholder">
             {this.state.location && `Here are the results for ${this.state.location}`}
           </h2>
+
           {/* Section for error message */}
           <section className="error-container" />
 
-          <div className="column-container">
+          <div className={`column-container ${!this.state.location && 'hide'}`}>
             {/* Section for weather data */}
             <section>
               <h3>Results from the Dark Sky API</h3>
