@@ -12,6 +12,7 @@ const getResource = async (resource, location) => {
 };
 
 // Returns an array of objects with resource keys and promise values for a particular location
+// Formatted location is squeezed in at the last moment.
 const fetchCityData = async searchQuery => {
   try {
     let location = await superagent.get(`${APP_URL}/location`).query({ data: searchQuery });
@@ -19,9 +20,12 @@ const fetchCityData = async searchQuery => {
     const resources = ['weather', 'movies', 'yelp', 'meetups', 'trails'];
     const cityDataPromises = resources.map(resource => getResource(resource, location));
     const cityData = await Promise.all(cityDataPromises);
-    return cityData.map((result, i) => ({
-      [resources[i]]: result,
-    }));
+    return [
+      { location: location.formatted_query },
+      ...cityData.map((result, i) => ({
+        [resources[i]]: result,
+      })),
+    ];
   } catch (err) {
     console.error(err);
   }
