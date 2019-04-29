@@ -1,4 +1,6 @@
 import React from 'react';
+import './App.scss';
+
 import Header from './components/header/header';
 import Footer from './components/footer/footer';
 
@@ -10,7 +12,7 @@ import Movies from './components/movies/movies';
 import Trails from './components/trails/trails';
 import Yelp from './components/yelp/yelp';
 
-import fetchCityData from './fetchCityData';
+import { fetchCityData } from './fetchCityData';
 
 class App extends React.Component {
   constructor(props) {

@@ -31,4 +31,4 @@ const fetchCityData = async searchQuery => {
   }
 };
 
-export default fetchCityData;
+export { getResource, fetchCityData };
