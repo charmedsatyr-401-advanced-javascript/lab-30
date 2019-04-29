@@ -1,12 +1,14 @@
 import React from 'react';
 import Header from './components/header/header';
 import Footer from './components/footer/footer';
-import Yelp from './components/yelp/yelp';
-import Form from './components/form/form';
+
 import DarkSky from './components/darksky/darksky';
+import Form from './components/form/form';
+import Map from './components/map/map';
 import Meetups from './components/meetups/meetups';
 import Movies from './components/movies/movies';
 import Trails from './components/trails/trails';
+import Yelp from './components/yelp/yelp';
 
 import fetchCityData from './fetchCityData';
 
@@ -32,16 +34,22 @@ class App extends React.Component {
         <main>
           <Form handleSubmit={this.handleSubmit} />
 
-          <img id="map" className="hide" src="" alt="Map of search query" />
+          {/* Map of location */}
+          <Map location={this.state.location} />
 
-          {/*** NEEDS TO DISPLAY RESULTS ***/}
+          {/* Show location */}
           <h2 className="query-placeholder">
-            {this.state.location && `Here are the results for ${this.state.location}`}
+            {this.state.location &&
+              `Here are the results for ${this.state.location.formatted_query}`}
           </h2>
 
           {/* Section for error message */}
-          <section className="error-container" />
+          <section className="error-container">
+            <p>{this.state.error}</p>
+          </section>
 
+          {/* Rendering static sections with dynamic content, rather than dynamic sections, in case
+           * some section content fails to load. The CSS expects the following sections in order. */}
           <div className={`column-container ${!this.state.location && 'hide'}`}>
             {/* Section for weather data */}
             <section>
