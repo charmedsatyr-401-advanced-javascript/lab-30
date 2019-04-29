@@ -21,13 +21,13 @@ const fetchCityData = async searchQuery => {
     const cityDataPromises = resources.map(resource => getResource(resource, location));
     const cityData = await Promise.all(cityDataPromises);
     return [
-      { location: location.formatted_query },
+      { location },
       ...cityData.map((result, i) => ({
         [resources[i]]: result,
       })),
     ];
   } catch (err) {
-    console.error(err);
+    return [{ error: err }];
   }
 };
 
