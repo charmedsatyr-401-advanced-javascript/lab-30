@@ -1,7 +1,6 @@
 import React from 'react';
 
 const Meetups = props => {
-  console.log('MEETUPS CONTENT:', (props && props.content) || 'none');
   const content =
     props.content && props.content.body
       ? props.content.body.map((item, index) => (

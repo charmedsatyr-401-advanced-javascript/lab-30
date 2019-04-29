@@ -5,57 +5,30 @@ import Yelp from './components/yelp/yelp';
 import Form from './components/form/form';
 import DarkSky from './components/darksky/darksky';
 import Meetups from './components/meetups/meetups';
+import Movies from './components/movies/movies';
+import Trails from './components/trails/trails';
 
-import superagent from 'superagent';
+import fetchCityData from './fetchCityData';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {};
   }
-  fetchCityData = e => {
+  handleSubmit = async e => {
     e.preventDefault();
-    const searchQuery = 'Seattle, WA';
-    const APP_URL = 'https://city-explorer-backend.herokuapp.com';
-
-    const displayMap = location => {
-      console.log(`displayMap for ${location}`);
-    };
-    const getResource = (resource, location) => {
-      superagent
-        .get(`${APP_URL}/${resource}`)
-        .query({ data: location })
-        .then(result => {
-          this.setState({ [resource]: result });
-          console.log(`Result for ${resource}, ${location}:`, result);
-        })
-        .catch(console.error);
-    };
-
-    superagent
-      .get(`${APP_URL}/location`)
-      .query({ data: searchQuery })
-      .then(location => {
-        this.setState({ location: location.body.formatted_query });
-
-        displayMap(location);
-        getResource('weather', location);
-        getResource('movies', location);
-        getResource('yelp', location);
-        getResource('meetups', location);
-        getResource('trails', location);
-      })
-      .catch(console.error);
+    const searchQuery = document.getElementById('input-search').value;
+    if (searchQuery) {
+      const results = await fetchCityData(searchQuery);
+      this.setState(Object.assign({}, ...results));
+    }
   };
-
   render() {
     return (
       <>
         <Header />
         <main>
-          {/*** NEEDS ON-USBMIT ***/}
-          <Form handleSubmit={this.fetchCityData} />
+          <Form handleSubmit={this.handleSubmit} />
 
           <img id="map" className="hide" src="" alt="Map of search query" />
 
@@ -73,6 +46,7 @@ class App extends React.Component {
               <DarkSky content={this.state.weather} />
             </section>
 
+            {/* Section for Yelp data */}
             <section className="yelp-container">
               <h3>Results from the Yelp API</h3>
               <Yelp content={this.state.yelp} />
@@ -87,13 +61,13 @@ class App extends React.Component {
             {/* Section for movie data */}
             <section className="movie-container">
               <h3>Results from The Movie DB API</h3>
-              <ul className="movies-results" />
+              <Movies content={this.state.movies} />
             </section>
 
             {/* Section for trails data */}
             <section>
               <h3>Results from the Hiking Project API</h3>
-              <ul className="trails-results" />
+              <Trails content={this.state.trails} />
             </section>
           </div>
         </main>

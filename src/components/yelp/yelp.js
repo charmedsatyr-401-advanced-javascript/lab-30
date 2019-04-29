@@ -1,7 +1,6 @@
 import React from 'react';
 
 const Yelp = props => {
-  console.log('YELP CONTENT:', (props && props.content) || 'none');
   const content =
     props.content && props.content.body
       ? props.content.body.map((item, index) => (
